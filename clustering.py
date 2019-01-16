@@ -39,7 +39,7 @@ n_clusters = n_classes(gt_labels)
 
 shapelet_lengths = {}
 for sz in [int(p * ts_len) for p in [.15, .3, .45]]:
-    n_shapelets = int(numpy.log(ts_len - sz) * ratio_n_shapelets)  # 2, 5, 8, 10
+    n_shapelets = int(numpy.log10(ts_len - sz) * ratio_n_shapelets)  # 2, 5, 8, 10
     shapelet_lengths[sz] = n_shapelets
 print(dataset, shapelet_lengths, model_class.__name__)
 
