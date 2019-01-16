@@ -253,14 +253,12 @@ class MimicModelL2:
 
     def _idx_match(self, Xi, k):
         shp = self.shapelets[k]
-        assert Xi.shape[1] == shp.shape[1] == 1
-        Xi = Xi.reshape((-1, ))
-        shp = shp.reshape((-1, ))
+        assert Xi.shape[1] == shp.shape[1] == self.d        
         sz = shp.shape[0]
-        elem_size = Xi.strides[0]
-        Xi_reshaped = as_strided(Xi, strides=(elem_size, elem_size), shape=(Xi.shape[0] - sz + 1, sz))
+        elem_size = Xi.strides
+        Xi_reshaped = as_strided(Xi, strides=(elem_size[0], elem_size[0],element_size[1]), shape=(Xi.shape[0] - sz + 1, sz, self.d))
         distances = numpy.linalg.norm(Xi_reshaped - shp, axis=1) ** 2
-        return numpy.argmin(distances)
+        return numpy.argmin(distances.sum(axis=1))
 
     def _shapelet_transform(self, Xi):
         ret = numpy.empty((self.n_shapelets, ))
