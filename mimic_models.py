@@ -256,7 +256,7 @@ class MimicModelL2:
         assert Xi.shape[1] == shp.shape[1] == self.d        
         sz = shp.shape[0]
         elem_size = Xi.strides
-        Xi_reshaped = as_strided(Xi, strides=(elem_size[0], elem_size[0],element_size[1]), shape=(Xi.shape[0] - sz + 1, sz, self.d))
+        Xi_reshaped = as_strided(Xi, strides=(elem_size[0], elem_size[0], elem_size[1]), shape=(Xi.shape[0] - sz + 1, sz, self.d))
         distances = numpy.linalg.norm(Xi_reshaped - shp, axis=1) ** 2
         return numpy.argmin(distances.sum(axis=1))
 
