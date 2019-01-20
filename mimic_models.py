@@ -1,4 +1,6 @@
 import numpy
+import matplotlib
+matplotlib.use('Agg')
 import sys
 from sklearn.cluster import KMeans
 import pickle
@@ -105,7 +107,8 @@ class MimicModelL2:
                 else:
                     loss = self._loss(_X)
                 print("iteration %d, loss=%f (average dist: %f, beta=%f)" % (idx_iter + 1, loss, avg_dist, self.beta))
-
+        return loss
+ 
     def fit(self, X):
         _X = X.reshape((X.shape[0], -1, self.d))
         self._init_shapelets(_X)
@@ -142,7 +145,7 @@ class MimicModelL2:
             l += (self.precomputed_dists[i, j] - self._compute_approximate_dist(X[i], X[j])) ** 2
         return l / (2 * n_pairs), numpy.mean(dists)
 
-    def _save_fit(self, X, niter, loss):
+    def _save_fit(self, X, niter, loss, dataset):
         n_ts, ts_len = X.shape[:2]
         n_pairs = int(n_ts * (n_ts - 1) / 2)
         transforms = numpy.array([self._shapelet_transform(Xi) for Xi in X])
@@ -159,7 +162,7 @@ class MimicModelL2:
         pylab.scatter(dists[:, 0], dists[:, 1])
         pylab.plot([numpy.min(dists), numpy.max(dists)], [numpy.min(dists), numpy.max(dists)], "r-", linewidth=2)
         pylab.title("Loss: %f" % loss)
-        pylab.savefig("fig/fit_%s_niter%d_%d.pdf" % (self.__class__.__name__, niter, int(time.time())))
+        pylab.savefig("fig/%s-fit_%s_niter%d_%d.pdf" % (dataset,self.__class__.__name__, niter, int(time.time())))
         pylab.close()
 
     def _init_shapelets(self, X):
@@ -256,7 +259,7 @@ class MimicModelL2:
         assert Xi.shape[1] == shp.shape[1] == self.d        
         sz = shp.shape[0]
         elem_size = Xi.strides
-        Xi_reshaped = as_strided(Xi, strides=(elem_size[0], elem_size[0],element_size[1]), shape=(Xi.shape[0] - sz + 1, sz, self.d))
+        Xi_reshaped = as_strided(Xi, strides=(elem_size[0], elem_size[0],elem_size[1]), shape=(Xi.shape[0] - sz + 1, sz, self.d))
         distances = numpy.linalg.norm(Xi_reshaped - shp, axis=1) ** 2
         return numpy.argmin(distances.sum(axis=1))
 
